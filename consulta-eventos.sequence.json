@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "SRB - Consulta de Eventos",
+    "output": "consulta-eventos.html",
+    "viewBox": [1040, 480],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "cliente", "type": "external", "label": "Cliente", "sublabel": "proceso consumidor" },
+    { "id": "gt", "type": "backend", "label": "Gestor de Transacciones", "sublabel": "enrutador sincrono" },
+    { "id": "rmc", "type": "backend", "label": "Servicio RMC", "sublabel": "reserva/mod/consulta" },
+    { "id": "persistencia", "type": "database", "label": "Servicio de Persistencia", "sublabel": "BD de eventos" }
+  ],
+  "segments": [
+    { "from": 150, "to": 240, "label": "Enrutamiento sincrono" },
+    { "from": 250, "to": 330, "label": "Consulta a persistencia" }
+  ],
+  "messages": [
+    { "id": "req-consulta", "from": "cliente", "to": "gt", "y": 160, "label": "consulta eventos del mes (REQ)", "variant": "default" },
+    { "id": "gt-rmc", "from": "gt", "to": "rmc", "y": 195, "label": "enrutar consulta (Req/Rep)", "variant": "emphasis" },
+    { "id": "rmc-query", "from": "rmc", "to": "persistencia", "y": 260, "label": "consultar eventos del mes", "variant": "default" },
+    { "id": "persist-rows", "from": "persistencia", "to": "rmc", "y": 300, "label": "eventos + asientos disponibles", "variant": "return" },
+    { "id": "rmc-gt", "from": "rmc", "to": "gt", "y": 340, "label": "resultado de la consulta", "variant": "return" },
+    { "id": "gt-cliente", "from": "gt", "to": "cliente", "y": 380, "label": "200 eventos del mes (REP)", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "gt", "from": 160, "to": 385, "type": "backend" },
+    { "participant": "rmc", "from": 195, "to": 345, "type": "backend" },
+    { "participant": "persistencia", "from": 260, "to": 305, "type": "database" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Camino feliz",
+      "items": [
+        "Toda la operacion es sincrona de extremo a extremo",
+        "El Gestor de Transacciones nunca consulta la persistencia directamente",
+        "El cliente espera la respuesta antes de continuar"
+      ]
+    }
+  ]
+}

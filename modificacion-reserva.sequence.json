@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "SRB - Modificacion de Reserva",
+    "output": "modificacion-reserva.html",
+    "viewBox": [1040, 560],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "cliente", "type": "external", "label": "Cliente", "sublabel": "proceso consumidor" },
+    { "id": "gt", "type": "backend", "label": "Gestor de Transacciones", "sublabel": "enrutador sincrono" },
+    { "id": "rmc", "type": "backend", "label": "Servicio RMC", "sublabel": "reserva/mod/consulta" },
+    { "id": "persistencia", "type": "database", "label": "Servicio de Persistencia", "sublabel": "BD de eventos" }
+  ],
+  "segments": [
+    { "from": 150, "to": 240, "label": "Enrutamiento sincrono" },
+    { "from": 250, "to": 395, "label": "Chequeo de disponibilidad y ajuste" },
+    { "from": 405, "to": 465, "label": "Respuesta al cliente" }
+  ],
+  "messages": [
+    { "id": "req-mod", "from": "cliente", "to": "gt", "y": 160, "label": "modificar reserva (asientos o fecha) (REQ)", "variant": "default" },
+    { "id": "gt-rmc", "from": "gt", "to": "rmc", "y": 195, "label": "enrutar modificacion (Req/Rep)", "variant": "emphasis" },
+    { "id": "rmc-check", "from": "rmc", "to": "persistencia", "y": 260, "label": "consultar disponibilidad en otra instancia del evento", "variant": "default" },
+    { "id": "persist-avail", "from": "persistencia", "to": "rmc", "y": 300, "label": "disponibilidad encontrada", "variant": "return" },
+    { "id": "rmc-apply", "from": "rmc", "to": "persistencia", "y": 340, "label": "aplicar modificacion", "variant": "emphasis", "note": "Si no hay disponibilidad, se rechaza y la reserva original no cambia" },
+    { "id": "persist-ok", "from": "persistencia", "to": "rmc", "y": 380, "label": "modificacion aplicada", "variant": "return" },
+    { "id": "rmc-gt", "from": "rmc", "to": "gt", "y": 420, "label": "exito / rechazo", "variant": "return" },
+    { "id": "gt-cliente", "from": "gt", "to": "cliente", "y": 460, "label": "resultado de la modificacion (REP)", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "gt", "from": 160, "to": 465, "type": "backend" },
+    { "participant": "rmc", "from": 195, "to": 425, "type": "backend" },
+    { "participant": "persistencia", "from": 260, "to": 385, "type": "database" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Camino feliz",
+      "items": [
+        "RMC busca cupo en otra ocurrencia del mismo evento en el mes",
+        "El ajuste se persiste antes de confirmar al cliente"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Rechazo atomico",
+      "items": [
+        "Si no hay asientos en el evento deseado ni en otra ocurrencia, la transaccion se rechaza",
+        "El cliente queda exactamente como estaba antes de pedir el cambio"
+      ]
+    }
+  ]
+}

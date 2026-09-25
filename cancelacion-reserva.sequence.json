@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "SRB - Cancelacion de Reserva (asincrona)",
+    "output": "cancelacion-reserva.html",
+    "viewBox": [1040, 480],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "cliente", "type": "external", "label": "Cliente", "sublabel": "proceso consumidor" },
+    { "id": "gt", "type": "backend", "label": "Gestor de Transacciones", "sublabel": "canal asincrono" },
+    { "id": "cancel", "type": "backend", "label": "Servicio de Cancelacion", "sublabel": "cancelacion + notificacion" },
+    { "id": "persistencia", "type": "database", "label": "Servicio de Persistencia", "sublabel": "BD de eventos" }
+  ],
+  "segments": [
+    { "from": 150, "to": 200, "label": "Aceptacion no bloqueante" },
+    { "from": 210, "to": 340, "label": "Liberacion y notificacion diferida" }
+  ],
+  "messages": [
+    { "id": "req-cancel", "from": "cliente", "to": "gt", "y": 160, "label": "cancelar reserva + datos de contacto", "variant": "default" },
+    { "id": "gt-ack", "from": "gt", "to": "cliente", "y": 190, "label": "ack inmediato de recepcion", "variant": "dashed" },
+    { "id": "gt-cancel", "from": "gt", "to": "cancel", "y": 230, "label": "enviar cancelacion (pub/sub o push/pull)", "variant": "dashed" },
+    { "id": "cancel-release", "from": "cancel", "to": "persistencia", "y": 280, "label": "liberar asientos", "variant": "default" },
+    { "id": "persist-ok", "from": "persistencia", "to": "cancel", "y": 320, "label": "liberacion confirmada", "variant": "return" },
+    { "id": "cancel-notify", "from": "cancel", "to": "cliente", "y": 370, "label": "notificacion: cancelacion efectuada", "variant": "dashed", "note": "Va directo al cliente, sin pasar de nuevo por el Gestor de Transacciones" }
+  ],
+  "activations": [
+    { "participant": "gt", "from": 160, "to": 195, "type": "backend" },
+    { "participant": "cancel", "from": 230, "to": 375, "type": "backend" },
+    { "participant": "persistencia", "from": 280, "to": 325, "type": "database" }
+  ],
+  "cards": [
+    {
+      "dot": "orange",
+      "title": "Patron asincrono",
+      "items": [
+        "El ack de recepcion es inmediato y no espera la liberacion real",
+        "La liberacion en persistencia ocurre despues, fuera del ciclo de respuesta",
+        "La notificacion final llega al cliente por un canal separado del Gestor de Transacciones"
+      ]
+    }
+  ]
+}

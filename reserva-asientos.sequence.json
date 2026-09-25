@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "SRB - Reserva de Asientos",
+    "output": "reserva-asientos.html",
+    "viewBox": [1040, 560],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "cliente", "type": "external", "label": "Cliente", "sublabel": "proceso consumidor" },
+    { "id": "gt", "type": "backend", "label": "Gestor de Transacciones", "sublabel": "enrutador sincrono" },
+    { "id": "rmc", "type": "backend", "label": "Servicio RMC", "sublabel": "reserva/mod/consulta" },
+    { "id": "persistencia", "type": "database", "label": "Servicio de Persistencia", "sublabel": "BD de eventos" }
+  ],
+  "segments": [
+    { "from": 150, "to": 240, "label": "Enrutamiento sincrono" },
+    { "from": 250, "to": 395, "label": "Chequeo y confirmacion en persistencia" },
+    { "from": 405, "to": 465, "label": "Respuesta al cliente" }
+  ],
+  "messages": [
+    { "id": "req-reserva", "from": "cliente", "to": "gt", "y": 160, "label": "reservar asientos (evento, cantidad) (REQ)", "variant": "default" },
+    { "id": "gt-rmc", "from": "gt", "to": "rmc", "y": 195, "label": "enrutar reserva (Req/Rep)", "variant": "emphasis" },
+    { "id": "rmc-check", "from": "rmc", "to": "persistencia", "y": 260, "label": "consultar disponibilidad en tiempo real", "variant": "default" },
+    { "id": "persist-avail", "from": "persistencia", "to": "rmc", "y": 300, "label": "asientos disponibles", "variant": "return" },
+    { "id": "rmc-confirm", "from": "rmc", "to": "persistencia", "y": 340, "label": "confirmar reserva (actualizar BD)", "variant": "emphasis", "note": "Solo si hay disponibilidad; si no, se omite y se rechaza" },
+    { "id": "persist-ok", "from": "persistencia", "to": "rmc", "y": 380, "label": "reserva confirmada", "variant": "return" },
+    { "id": "rmc-gt", "from": "rmc", "to": "gt", "y": 420, "label": "exito / rechazo", "variant": "return" },
+    { "id": "gt-cliente", "from": "gt", "to": "cliente", "y": 460, "label": "resultado de la reserva (REP)", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "gt", "from": 160, "to": 465, "type": "backend" },
+    { "participant": "rmc", "from": 195, "to": 425, "type": "backend" },
+    { "participant": "persistencia", "from": 260, "to": 385, "type": "database" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Camino feliz",
+      "items": [
+        "Disponibilidad se valida en tiempo real antes de confirmar",
+        "La confirmacion en BD ocurre antes de responder al cliente",
+        "Todo el flujo usa el patron Req/Rep de ZeroMQ"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Rechazo",
+      "items": [
+        "Si no hay asientos disponibles, RMC nunca llama a confirmar reserva",
+        "El cliente recibe un rechazo explicito, sin cambios en la BD"
+      ]
+    }
+  ]
+}
