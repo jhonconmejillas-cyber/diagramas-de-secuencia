@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagramas de secuencia - Sistema de Reserva de Boletos (SRB)</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 720px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+    line-height: 1.6;
+  }
+  h1 { font-size: 1.5rem; }
+  ul { padding-left: 1.2rem; }
+  li { margin-bottom: 0.5rem; }
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .meta { color: #666; font-size: 0.9rem; }
+  code { background: rgba(127,127,127,0.15); padding: 0.1rem 0.3rem; border-radius: 3px; }
+</style>
+</head>
+<body>
+  <h1>Diagramas de secuencia - Sistema de Reserva de Boletos (SRB)</h1>
+  <p class="meta">
+    Generados con <a href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener">Archify</a>
+    a partir del enunciado "Sistema Distribuido Basado en Servicios para la Reserva de Boletos"
+    (Introducción a Sistemas Distribuidos, Pontificia Universidad Javeriana).
+  </p>
+  <ul>
+    <li><a href="consulta-eventos.html">Consulta de eventos del mes</a> — Síncrono (Req/Rep)</li>
+    <li><a href="reserva-asientos.html">Reserva de puestos para un evento</a> — Síncrono (Req/Rep)</li>
+    <li><a href="modificacion-reserva.html">Modificación de una reserva existente</a> — Síncrono (Req/Rep)</li>
+    <li><a href="cancelacion-reserva.html">Cancelación de una reserva</a> — Asíncrono (ack inmediato + notificación diferida)</li>
+  </ul>
+  <p class="meta">
+    Código fuente en
+    <a href="https://github.com/jhonconmejillas-cyber/diagramas-de-secuencia" target="_blank" rel="noopener">GitHub</a>.
+    Cada <code>.sequence.json</code> es la especificación que generó el diagrama correspondiente.
+  </p>
+</body>
+</html>
