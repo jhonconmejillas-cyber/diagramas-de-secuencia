@@ -4,7 +4,7 @@
   "meta": {
     "title": "SRB - Cancelacion de Reserva (asincrona)",
     "output": "cancelacion-reserva.html",
-    "viewBox": [1040, 480],
+    "viewBox": [1040, 540],
     "column_fit": "spread",
     "quality_profile": "showcase"
   },
@@ -12,24 +12,28 @@
     { "id": "cliente", "type": "external", "label": "Cliente", "sublabel": "proceso consumidor" },
     { "id": "gt", "type": "backend", "label": "Gestor de Transacciones", "sublabel": "canal asincrono" },
     { "id": "cancel", "type": "backend", "label": "Servicio de Cancelacion", "sublabel": "cancelacion + notificacion" },
-    { "id": "persistencia", "type": "database", "label": "Servicio de Persistencia", "sublabel": "BD de eventos" }
+    { "id": "persistencia", "type": "backend", "label": "Servicio de Persistencia", "sublabel": "acceso a datos" },
+    { "id": "bd", "type": "database", "label": "BD (PostgreSQL)", "sublabel": "eventos y reservas" }
   ],
   "segments": [
-    { "from": 150, "to": 200, "label": "Aceptacion no bloqueante" },
-    { "from": 210, "to": 340, "label": "Liberacion y notificacion diferida" }
+    { "from": 150, "to": 205, "label": "Aceptacion no bloqueante" },
+    { "from": 215, "to": 440, "label": "Liberacion y notificacion diferida" }
   ],
   "messages": [
-    { "id": "req-cancel", "from": "cliente", "to": "gt", "y": 160, "label": "cancelar reserva + datos de contacto", "variant": "default" },
-    { "id": "gt-ack", "from": "gt", "to": "cliente", "y": 190, "label": "ack inmediato de recepcion", "variant": "dashed" },
-    { "id": "gt-cancel", "from": "gt", "to": "cancel", "y": 230, "label": "enviar cancelacion (pub/sub o push/pull)", "variant": "dashed" },
-    { "id": "cancel-release", "from": "cancel", "to": "persistencia", "y": 280, "label": "liberar asientos", "variant": "default" },
-    { "id": "persist-ok", "from": "persistencia", "to": "cancel", "y": 320, "label": "liberacion confirmada", "variant": "return" },
-    { "id": "cancel-notify", "from": "cancel", "to": "cliente", "y": 370, "label": "notificacion: cancelacion efectuada", "variant": "dashed", "note": "Va directo al cliente, sin pasar de nuevo por el Gestor de Transacciones" }
+    { "id": "req-cancel", "from": "cliente", "to": "gt", "y": 160, "label": "cancelar reserva + direccion de contacto (REQ/REP)", "variant": "default", "note": "El cliente abre un PULL en su propio puerto para recibir la notificacion" },
+    { "id": "gt-ack", "from": "gt", "to": "cliente", "y": 192, "label": "ack inmediato de recepcion (REP)", "variant": "dashed" },
+    { "id": "gt-cancel", "from": "gt", "to": "cancel", "y": 235, "label": "enviar cancelacion (PUSH/PULL)", "variant": "dashed" },
+    { "id": "cancel-release", "from": "cancel", "to": "persistencia", "y": 275, "label": "liberar asientos (REQ/REP)", "variant": "default" },
+    { "id": "persist-update", "from": "persistencia", "to": "bd", "y": 310, "label": "UPDATE asientos + reserva", "variant": "default" },
+    { "id": "bd-ok", "from": "bd", "to": "persistencia", "y": 345, "label": "commit OK", "variant": "return" },
+    { "id": "persist-ok", "from": "persistencia", "to": "cancel", "y": 380, "label": "liberacion confirmada (REP)", "variant": "return" },
+    { "id": "cancel-notify", "from": "cancel", "to": "cliente", "y": 425, "label": "notificacion, cancelacion efectuada (PUSH/PULL al PULL del cliente)", "variant": "dashed", "note": "Va directo al cliente, sin pasar de nuevo por el Gestor de Transacciones" }
   ],
   "activations": [
-    { "participant": "gt", "from": 160, "to": 195, "type": "backend" },
-    { "participant": "cancel", "from": 230, "to": 375, "type": "backend" },
-    { "participant": "persistencia", "from": 280, "to": 325, "type": "database" }
+    { "participant": "gt", "from": 160, "to": 240, "type": "backend" },
+    { "participant": "cancel", "from": 235, "to": 430, "type": "backend" },
+    { "participant": "persistencia", "from": 275, "to": 385, "type": "backend" },
+    { "participant": "bd", "from": 310, "to": 350, "type": "database" }
   ],
   "cards": [
     {

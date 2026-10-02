@@ -15,7 +15,7 @@ especificación fuente que generó ese HTML.
 | [`consulta-eventos.html`](consulta-eventos.html) | Consulta de eventos del mes | Síncrono (Req/Rep) |
 | [`reserva-asientos.html`](reserva-asientos.html) | Reserva de puestos para un evento | Síncrono (Req/Rep) |
 | [`modificacion-reserva.html`](modificacion-reserva.html) | Modificación de una reserva existente | Síncrono (Req/Rep) |
-| [`cancelacion-reserva.html`](cancelacion-reserva.html) | Cancelación de una reserva | Asíncrono (ack inmediato + notificación diferida) |
+| [`cancelacion-reserva.html`](cancelacion-reserva.html) | Cancelación de una reserva | Asíncrono (ack inmediato + notificación PUSH/PULL diferida) |
 
 ## Arquitectura de referencia
 
@@ -24,8 +24,9 @@ Basado en la arquitectura de 3 capas del enunciado:
 - **Capa de consumidores**: Clientes
 - **Capa de servicios de negocio**: Gestor de Transacciones (GT), Servicio RMC
   (Reserva/Modificación/Consulta), Servicio de Cancelación y Notificaciones
-- **Capa de servicios de almacenamiento**: Servicio de Persistencia
+- **Capa de servicios de almacenamiento**: Servicio de Persistencia y BD (PostgreSQL)
 
-Las comunicaciones síncronas usan el patrón Req/Rep de ZeroMQ; la cancelación usa un
-patrón asíncrono (pub/sub o push/pull) y notifica al cliente directamente, sin pasar de
-nuevo por el Gestor de Transacciones.
+Las comunicaciones síncronas usan el patrón Req/Rep de ZeroMQ; la cancelación usa
+PUSH/PULL: el cliente abre un PULL en su propio puerto y el Servicio de Cancelación le
+envía la notificación directamente, sin pasar de nuevo por el Gestor de Transacciones.
+El Servicio de Persistencia accede a la BD con operaciones SQL (SELECT, UPDATE, INSERT).

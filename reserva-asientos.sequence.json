@@ -4,7 +4,7 @@
   "meta": {
     "title": "SRB - Reserva de Asientos",
     "output": "reserva-asientos.html",
-    "viewBox": [1040, 560],
+    "viewBox": [1040, 640],
     "column_fit": "spread",
     "quality_profile": "showcase"
   },
@@ -12,27 +12,34 @@
     { "id": "cliente", "type": "external", "label": "Cliente", "sublabel": "proceso consumidor" },
     { "id": "gt", "type": "backend", "label": "Gestor de Transacciones", "sublabel": "enrutador sincrono" },
     { "id": "rmc", "type": "backend", "label": "Servicio RMC", "sublabel": "reserva/mod/consulta" },
-    { "id": "persistencia", "type": "database", "label": "Servicio de Persistencia", "sublabel": "BD de eventos" }
+    { "id": "persistencia", "type": "backend", "label": "Servicio de Persistencia", "sublabel": "acceso a datos" },
+    { "id": "bd", "type": "database", "label": "BD (PostgreSQL)", "sublabel": "eventos y reservas" }
   ],
   "segments": [
-    { "from": 150, "to": 240, "label": "Enrutamiento sincrono" },
-    { "from": 250, "to": 395, "label": "Chequeo y confirmacion en persistencia" },
-    { "from": 405, "to": 465, "label": "Respuesta al cliente" }
+    { "from": 150, "to": 215, "label": "Enrutamiento sincrono" },
+    { "from": 230, "to": 495, "label": "Chequeo y confirmacion en persistencia" },
+    { "from": 505, "to": 570, "label": "Respuesta al cliente" }
   ],
   "messages": [
-    { "id": "req-reserva", "from": "cliente", "to": "gt", "y": 160, "label": "reservar asientos (evento, cantidad) (REQ)", "variant": "default" },
-    { "id": "gt-rmc", "from": "gt", "to": "rmc", "y": 195, "label": "enrutar reserva (Req/Rep)", "variant": "emphasis" },
-    { "id": "rmc-check", "from": "rmc", "to": "persistencia", "y": 260, "label": "consultar disponibilidad en tiempo real", "variant": "default" },
-    { "id": "persist-avail", "from": "persistencia", "to": "rmc", "y": 300, "label": "asientos disponibles", "variant": "return" },
-    { "id": "rmc-confirm", "from": "rmc", "to": "persistencia", "y": 340, "label": "confirmar reserva (actualizar BD)", "variant": "emphasis", "note": "Solo si hay disponibilidad; si no, se omite y se rechaza" },
-    { "id": "persist-ok", "from": "persistencia", "to": "rmc", "y": 380, "label": "reserva confirmada", "variant": "return" },
-    { "id": "rmc-gt", "from": "rmc", "to": "gt", "y": 420, "label": "exito / rechazo", "variant": "return" },
-    { "id": "gt-cliente", "from": "gt", "to": "cliente", "y": 460, "label": "resultado de la reserva (REP)", "variant": "return" }
+    { "id": "req-reserva", "from": "cliente", "to": "gt", "y": 160, "label": "reservar asientos (evento, cantidad) (REQ/REP)", "variant": "default" },
+    { "id": "gt-rmc", "from": "gt", "to": "rmc", "y": 195, "label": "enrutar reserva (REQ/REP)", "variant": "emphasis" },
+    { "id": "rmc-check", "from": "rmc", "to": "persistencia", "y": 250, "label": "consultar disponibilidad en tiempo real (REQ/REP)", "variant": "default" },
+    { "id": "persist-select", "from": "persistencia", "to": "bd", "y": 282, "label": "SELECT asientos disponibles", "variant": "default" },
+    { "id": "bd-rows", "from": "bd", "to": "persistencia", "y": 314, "label": "filas", "variant": "return" },
+    { "id": "persist-avail", "from": "persistencia", "to": "rmc", "y": 346, "label": "asientos disponibles (REP)", "variant": "return" },
+    { "id": "rmc-confirm", "from": "rmc", "to": "persistencia", "y": 386, "label": "confirmar reserva (REQ/REP)", "variant": "emphasis", "note": "Solo si hay disponibilidad; si no, se omite y se rechaza" },
+    { "id": "persist-update", "from": "persistencia", "to": "bd", "y": 420, "label": "UPDATE asientos + INSERT reserva", "variant": "emphasis" },
+    { "id": "bd-ok", "from": "bd", "to": "persistencia", "y": 452, "label": "commit OK", "variant": "return" },
+    { "id": "persist-ok", "from": "persistencia", "to": "rmc", "y": 484, "label": "reserva confirmada (REP)", "variant": "return" },
+    { "id": "rmc-gt", "from": "rmc", "to": "gt", "y": 520, "label": "exito / rechazo (REP)", "variant": "return" },
+    { "id": "gt-cliente", "from": "gt", "to": "cliente", "y": 555, "label": "resultado de la reserva (REP)", "variant": "return" }
   ],
   "activations": [
-    { "participant": "gt", "from": 160, "to": 465, "type": "backend" },
-    { "participant": "rmc", "from": 195, "to": 425, "type": "backend" },
-    { "participant": "persistencia", "from": 260, "to": 385, "type": "database" }
+    { "participant": "gt", "from": 160, "to": 560, "type": "backend" },
+    { "participant": "rmc", "from": 195, "to": 525, "type": "backend" },
+    { "participant": "persistencia", "from": 250, "to": 489, "type": "backend" },
+    { "participant": "bd", "from": 282, "to": 319, "type": "database" },
+    { "participant": "bd", "from": 420, "to": 457, "type": "database" }
   ],
   "cards": [
     {
@@ -41,7 +48,7 @@
       "items": [
         "Disponibilidad se valida en tiempo real antes de confirmar",
         "La confirmacion en BD ocurre antes de responder al cliente",
-        "Todo el flujo usa el patron Req/Rep de ZeroMQ"
+        "Los servicios se comunican con Req/Rep de ZeroMQ; Persistencia accede a la BD con SQL"
       ]
     },
     {
