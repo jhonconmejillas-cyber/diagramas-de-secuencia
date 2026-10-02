@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagramas de secuencia - Sistema de Reserva de Boletos (SRB)</title>
+<title>Diagramas - Sistema de Reserva de Boletos (SRB)</title>
 <style>
   :root { color-scheme: light dark; }
   body {
@@ -14,6 +14,7 @@
     line-height: 1.6;
   }
   h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
   ul { padding-left: 1.2rem; }
   li { margin-bottom: 0.5rem; }
   a { text-decoration: none; }
@@ -23,17 +24,23 @@
 </style>
 </head>
 <body>
-  <h1>Diagramas de secuencia - Sistema de Reserva de Boletos (SRB)</h1>
+  <h1>Diagramas - Sistema de Reserva de Boletos (SRB)</h1>
   <p class="meta">
-    Generados con <a href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener">Archify</a>
-    a partir del enunciado "Sistema Distribuido Basado en Servicios para la Reserva de Boletos"
+    Elaborados a partir del enunciado "Sistema Distribuido Basado en Servicios para la Reserva de Boletos"
     (Introducción a Sistemas Distribuidos, Pontificia Universidad Javeriana).
   </p>
+  <h2>Diagramas de arquitectura</h2>
+  <ul>
+    <li><a href="diagrama-componentes.html">Diagrama de componentes</a> — capas de consumidores, negocio y almacenamiento</li>
+    <li><a href="diagrama-despliegue.html">Diagrama de despliegue</a> — distribución de los servicios en PC1 a PC4</li>
+    <li><a href="diagrama-clases.html">Diagrama de clases</a> — servicios y modelo de datos (Evento, Ocurrencia, Reserva)</li>
+  </ul>
+  <h2>Diagramas de secuencia</h2>
   <ul>
     <li><a href="consulta-eventos.html">Consulta de eventos del mes</a> — Síncrono (Req/Rep)</li>
     <li><a href="reserva-asientos.html">Reserva de puestos para un evento</a> — Síncrono (Req/Rep)</li>
     <li><a href="modificacion-reserva.html">Modificación de una reserva existente</a> — Síncrono (Req/Rep)</li>
-    <li><a href="cancelacion-reserva.html">Cancelación de una reserva</a> — Asíncrono (ack inmediato + notificación diferida)</li>
+    <li><a href="cancelacion-reserva.html">Cancelación de una reserva</a> — Asíncrono (ack inmediato + notificación PUSH/PULL diferida)</li>
   </ul>
   <p class="meta">
     Código fuente en

@@ -17,6 +17,17 @@ especificación fuente que generó ese HTML.
 | [`modificacion-reserva.html`](modificacion-reserva.html) | Modificación de una reserva existente | Síncrono (Req/Rep) |
 | [`cancelacion-reserva.html`](cancelacion-reserva.html) | Cancelación de una reserva | Asíncrono (ack inmediato + notificación PUSH/PULL diferida) |
 
+## Diagramas de arquitectura
+
+Páginas con la imagen del diagrama (en `img/`) y zoom: rueda del mouse o doble clic
+para acercar, arrastrar para moverse, botones Ajustar / 1:1 / − / +.
+
+| Diagrama | Contenido |
+|---|---|
+| [`diagrama-componentes.html`](diagrama-componentes.html) | Capas de consumidores, servicios de negocio y almacenamiento |
+| [`diagrama-despliegue.html`](diagrama-despliegue.html) | Distribución de los servicios en PC1 a PC4 con REQ/REP y PUSH/PULL |
+| [`diagrama-clases.html`](diagrama-clases.html) | Servicios y modelo de datos (Evento, Ocurrencia, Reserva) |
+
 ## Arquitectura de referencia
 
 Basado en la arquitectura de 3 capas del enunciado:
